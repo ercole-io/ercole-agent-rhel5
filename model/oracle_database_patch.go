@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,22 +13,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package oracle
+package model
 
-import (
-	"encoding/json"
-
-	"github.com/ercole-io/ercole-agent/v2/agentmodel"
-)
-
-// Schemas marshals -action schema output
-func Schemas(cmdOutput []byte) []agentmodel.DbSchemasModel {
-	var rawOut []agentmodel.DbSchemasModel
-
-	err := json.Unmarshal(cmdOutput, &rawOut)
-	if err != nil {
-		panic(err)
-	}
-
-	return rawOut
+// OracleDatabasePatch holds information about an Oracle database patch
+type OracleDatabasePatch struct {
+	Version     string                 `json:"version" bson:"version"`
+	PatchID     int                    `json:"patchID" bson:"patchID"`
+	Action      string                 `json:"action" bson:"action"`
+	Description string                 `json:"description" bson:"description"`
+	Date        string                 `json:"date" bson:"date"`
+	OtherInfo   map[string]interface{} `json:"-" bson:"-"`
 }

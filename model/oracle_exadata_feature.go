@@ -13,45 +13,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package main
+package model
 
-import (
-	"log"
-
-	"github.com/kardianos/service"
-)
-
-var serviceLogger service.Logger
-
-func serve(prg *program) {
-	svcConfig := &service.Config{
-		Name:        "ErcoleAgent",
-		DisplayName: "The Ercole Agent",
-		Description: "Asset management agent from the Ercole project.",
-	}
-
-	s, err := service.New(prg, svcConfig)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	serviceLogger, err = s.Logger(nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = s.Run()
-	if err != nil {
-		serviceLogger.Error(err)
-	}
-
-}
-
-func (p *program) Start(s service.Service) error {
-	go p.run()
-	return nil
-}
-
-func (p *program) Stop(s service.Service) error {
-	return nil
+// OracleExadataFeature holds specific informations about a exadata.
+type OracleExadataFeature struct {
+	Components []OracleExadataComponent `json:"components" bson:"components"`
+	OtherInfo  map[string]interface{}   `json:"-" bson:"-"`
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,22 +13,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package oracle
+package model
 
-import (
-	"encoding/json"
-
-	"github.com/ercole-io/ercole-agent/v2/agentmodel"
-)
-
-// BackupSchedule marshals -action backup_schedule output
-func BackupSchedule(cmdOutput []byte) []agentmodel.DbBackupsModel {
-	var rawOut []agentmodel.DbBackupsModel
-
-	err := json.Unmarshal(cmdOutput, &rawOut)
-	if err != nil {
-		panic(err)
-	}
-
-	return rawOut
+// OracleDatabasePluggableDatabase holds information about an Oracle pluggable database.
+type OracleDatabasePluggableDatabase struct {
+	Name        string                     `json:"name" bson:"name"`
+	Status      string                     `json:"status" bson:"status"`
+	Tablespaces []OracleDatabaseTablespace `json:"tablespaces" bson:"tablespaces"`
+	Schemas     []OracleDatabaseSchema     `json:"schemas" bson:"schemas"`
+	Services    []OracleDatabaseService    `json:"services" bson:"services"`
+	OtherInfo   map[string]interface{}     `json:"-" bson:"-"`
 }

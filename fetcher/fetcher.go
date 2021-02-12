@@ -16,9 +16,9 @@
 package fetcher
 
 import (
-	"github.com/ercole-io/ercole-agent/v2/agentmodel"
-	"github.com/ercole-io/ercole-agent/v2/config"
-	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole-agent-rhel5/agentmodel"
+	"github.com/ercole-io/ercole-agent-rhel5/config"
+	"github.com/ercole-io/ercole-agent-rhel5/model"
 )
 
 // Fetcher interface for Linux and Windows
@@ -60,18 +60,6 @@ type Fetcher interface {
 	// Oracle/Exadata fetchers
 	GetOracleExadataComponents() []model.OracleExadataComponent
 	GetOracleExadataCellDisks() map[agentmodel.StorageServerName][]model.OracleExadataCellDisk
-
-	// Microsoft/SQLServer fetchers
-	GetMicrosoftSQLServerInstances() []agentmodel.ListInstanceOutputModel
-	GetMicrosoftSQLServerInstanceInfo(conn string, inst *model.MicrosoftSQLServerInstance)
-	GetMicrosoftSQLServerInstanceEdition(conn string, inst *model.MicrosoftSQLServerInstance)
-	GetMicrosoftSQLServerInstanceLicensingInfo(conn string, inst *model.MicrosoftSQLServerInstance)
-	GetMicrosoftSQLServerInstanceDatabase(conn string) []model.MicrosoftSQLServerDatabase
-	GetMicrosoftSQLServerInstanceDatabaseBackups(conn string) []agentmodel.DbBackupsModel
-	GetMicrosoftSQLServerInstanceDatabaseSchemas(conn string) []agentmodel.DbSchemasModel
-	GetMicrosoftSQLServerInstanceDatabaseTablespaces(conn string) []agentmodel.DbTablespacesModel
-	GetMicrosoftSQLServerInstancePatches(conn string) []model.MicrosoftSQLServerPatch
-	GetMicrosoftSQLServerProductFeatures(conn string) []model.MicrosoftSQLServerProductFeature
 }
 
 // User struct

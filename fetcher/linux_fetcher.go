@@ -20,12 +20,12 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ercole-io/ercole-agent/v2/agentmodel"
-	"github.com/ercole-io/ercole-agent/v2/config"
-	"github.com/ercole-io/ercole-agent/v2/logger"
-	"github.com/ercole-io/ercole-agent/v2/marshal"
-	marshal_oracle "github.com/ercole-io/ercole-agent/v2/marshal/oracle"
-	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole-agent-rhel5/agentmodel"
+	"github.com/ercole-io/ercole-agent-rhel5/config"
+	"github.com/ercole-io/ercole-agent-rhel5/logger"
+	"github.com/ercole-io/ercole-agent-rhel5/marshal"
+	marshal_oracle "github.com/ercole-io/ercole-agent-rhel5/marshal/oracle"
+	"github.com/ercole-io/ercole-agent-rhel5/model"
 )
 
 // LinuxFetcherImpl fetcher implementation for linux
@@ -355,52 +355,3 @@ func (lf *LinuxFetcherImpl) GetMicrosoftSQLServerInstances() []agentmodel.ListIn
 }
 
 // GetMicrosoftSQLServerInstanceInfo get
-func (lf *LinuxFetcherImpl) GetMicrosoftSQLServerInstanceInfo(conn string, inst *model.MicrosoftSQLServerInstance) {
-	lf.log.Error(notImplementedLinux)
-}
-
-// GetMicrosoftSQLServerInstanceEdition get
-func (lf *LinuxFetcherImpl) GetMicrosoftSQLServerInstanceEdition(conn string, inst *model.MicrosoftSQLServerInstance) {
-	lf.log.Error(notImplementedLinux)
-}
-
-// GetMicrosoftSQLServerInstanceLicensingInfo get
-func (lf *LinuxFetcherImpl) GetMicrosoftSQLServerInstanceLicensingInfo(conn string, inst *model.MicrosoftSQLServerInstance) {
-	lf.log.Error(notImplementedLinux)
-}
-
-// GetMicrosoftSQLServerInstanceDatabase get
-func (lf *LinuxFetcherImpl) GetMicrosoftSQLServerInstanceDatabase(conn string) []model.MicrosoftSQLServerDatabase {
-	lf.log.Error(notImplementedLinux)
-	return nil
-}
-
-// GetMicrosoftSQLServerInstanceDatabaseBackups get
-func (lf *LinuxFetcherImpl) GetMicrosoftSQLServerInstanceDatabaseBackups(conn string) []agentmodel.DbBackupsModel {
-	lf.log.Error(notImplementedLinux)
-	return nil
-}
-
-// GetMicrosoftSQLServerInstanceDatabaseSchemas get
-func (lf *LinuxFetcherImpl) GetMicrosoftSQLServerInstanceDatabaseSchemas(conn string) []agentmodel.DbSchemasModel {
-	lf.log.Error(notImplementedLinux)
-	return nil
-}
-
-// GetMicrosoftSQLServerInstanceDatabaseTablespaces get
-func (lf *LinuxFetcherImpl) GetMicrosoftSQLServerInstanceDatabaseTablespaces(conn string) []agentmodel.DbTablespacesModel {
-	lf.log.Error(notImplementedLinux)
-	return nil
-}
-
-// GetMicrosoftSQLServerInstancePatches get
-func (lf *LinuxFetcherImpl) GetMicrosoftSQLServerInstancePatches(conn string) []model.MicrosoftSQLServerPatch {
-	lf.log.Error(notImplementedLinux)
-	return nil
-}
-
-// GetMicrosoftSQLServerProductFeatures get
-func (lf *LinuxFetcherImpl) GetMicrosoftSQLServerProductFeatures(conn string) []model.MicrosoftSQLServerProductFeature {
-	lf.log.Error(notImplementedLinux)
-	return nil
-}

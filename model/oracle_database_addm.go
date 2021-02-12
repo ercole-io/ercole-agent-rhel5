@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,26 +13,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package oracle
+package model
 
-import (
-	"encoding/json"
-
-	"github.com/ercole-io/ercole/v2/model"
-)
-
-// Edition marshals -action edition output
-func Edition(cmdOutput []byte, inst *model.MicrosoftSQLServerInstance) {
-	var out struct {
-		Data struct {
-			Edition string `json:"edition"`
-		} `json:"data"`
-	}
-
-	err := json.Unmarshal(cmdOutput, &out)
-	if err != nil {
-		panic(err)
-	}
-
-	inst.Edition = out.Data.Edition
+// OracleDatabaseAddm contains info about a addm
+type OracleDatabaseAddm struct {
+	Finding        string                 `json:"finding" bson:"finding"`
+	Recommendation string                 `json:"recommendation" bson:"recommendation"`
+	Action         string                 `json:"action" bson:"action"`
+	Benefit        float64                `json:"benefit" bson:"benefit"`
+	OtherInfo      map[string]interface{} `json:"-" bson:"-"`
 }

@@ -19,7 +19,7 @@ import (
 	"bufio"
 	"strings"
 
-	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole-agent-rhel5/model"
 )
 
 // Clusters returns a list of Clusters entries extracted

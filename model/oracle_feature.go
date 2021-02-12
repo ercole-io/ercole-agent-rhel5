@@ -1,5 +1,3 @@
-// +build windows
-
 // Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
@@ -15,18 +13,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package fetcher
+package model
 
-import (
-	"fmt"
-
-	"github.com/ercole-io/ercole-agent-rhel5/logger"
-)
-
-// RunCommandAs utility
-func runCommandAs(log logger.Logger, u *User, commandName string, args ...string) (stdout, stderr []byte, exitCode int, err error) {
-	msg := "Not yet implemented for Windows"
-	log.Error(msg)
-
-	return nil, nil, -1, fmt.Errorf(msg)
+type OracleFeature struct {
+	Database  *OracleDatabaseFeature `json:"database,omitempty" bson:"database,omitempty"`
+	Exadata   *OracleExadataFeature  `json:"exadata,omitempty" bson:"exadata,omitempty"`
+	OtherInfo map[string]interface{} `json:"-" bson:"-"`
 }

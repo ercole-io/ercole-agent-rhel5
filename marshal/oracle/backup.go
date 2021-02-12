@@ -20,7 +20,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole-agent-rhel5/model"
 )
 
 // Backups marshals a backup output list into a struct.

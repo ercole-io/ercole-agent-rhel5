@@ -18,7 +18,7 @@ package marshal
 import (
 	"strings"
 
-	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole-agent-rhel5/model"
 )
 
 // Host returns a Host struct from the output of the host

@@ -24,12 +24,12 @@ import (
 	"os"
 	"time"
 
-	"github.com/ercole-io/ercole-agent/v2/builder"
-	"github.com/ercole-io/ercole-agent/v2/config"
-	"github.com/ercole-io/ercole-agent/v2/logger"
-	"github.com/ercole-io/ercole-agent/v2/scheduler"
-	"github.com/ercole-io/ercole-agent/v2/scheduler/storage"
-	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole-agent-rhel5/builder"
+	"github.com/ercole-io/ercole-agent-rhel5/config"
+	"github.com/ercole-io/ercole-agent-rhel5/logger"
+	"github.com/ercole-io/ercole-agent-rhel5/model"
+	"github.com/ercole-io/ercole-agent-rhel5/scheduler"
+	"github.com/ercole-io/ercole-agent-rhel5/scheduler/storage"
 )
 
 var version = "latest"
@@ -42,7 +42,7 @@ type program struct {
 func (p *program) run() {
 	configuration := config.ReadConfig()
 
-	if configuration.Verbose == true {
+	if configuration.Verbose {
 		p.log.SetLevel(logger.DebugLevel)
 	}
 
@@ -136,8 +136,21 @@ func writeHostDataOnTmpFile(data *model.HostData, log logger.Logger) {
 }
 
 func main() {
-	log := logger.NewLogger("AGENT")
+	log := logger.NewBasicLogger("AGENT")
+
+	//configuration := config.ReadConfig()
+	//memStorage := storage.NewMemoryStorage()
+	//scheduler := scheduler.New(memStorage)
+	//_, err := scheduler.RunEvery(time.Duration(configuration.Period)*time.Hour, doBuildAndSend, configuration, log)
+
+	//if err != nil {
+	//	log.Fatal("Error sending data", err)
+	//}
+
+	//scheduler.Start()
+	//scheduler.Wait()
+
 	prg := &program{log}
 
-	serve(prg)
+	prg.run()
 }

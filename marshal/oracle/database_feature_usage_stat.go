@@ -20,8 +20,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ercole-io/ercole-agent/v2/marshal"
-	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole-agent-rhel5/marshal"
+	"github.com/ercole-io/ercole-agent-rhel5/model"
 )
 
 // DatabaseFeatureUsageStat returns information about database features2 extracted

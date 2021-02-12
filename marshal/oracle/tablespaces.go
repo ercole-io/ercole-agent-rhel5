@@ -19,8 +19,8 @@ import (
 	"bufio"
 	"strings"
 
-	"github.com/ercole-io/ercole-agent/v2/marshal"
-	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole-agent-rhel5/marshal"
+	"github.com/ercole-io/ercole-agent-rhel5/model"
 )
 
 // Tablespaces returns information about database tablespaces extracted

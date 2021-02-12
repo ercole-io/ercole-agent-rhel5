@@ -16,14 +16,12 @@
 package common
 
 import (
-	"context"
 	"sort"
 	"sync"
 
-	"github.com/ercole-io/ercole-agent/v2/agentmodel"
-	"github.com/ercole-io/ercole-agent/v2/utils"
-	"github.com/ercole-io/ercole/v2/model"
-	"github.com/hashicorp/go-version"
+	"github.com/ercole-io/ercole-agent-rhel5/agentmodel"
+	"github.com/ercole-io/ercole-agent-rhel5/model"
+	"github.com/ercole-io/ercole-agent-rhel5/utils"
 )
 
 func (b *CommonBuilder) getOracleDatabaseFeature(host model.Host) *model.OracleDatabaseFeature {
@@ -118,28 +116,13 @@ func (b *CommonBuilder) getOracleDB(entry agentmodel.OratabEntry, host model.Hos
 func (b *CommonBuilder) getOpenDatabase(entry agentmodel.OratabEntry, hardwareAbstractionTechnology string) *model.OracleDatabase {
 	stringDbVersion := b.fetcher.GetOracleDatabaseDbVersion(entry)
 
-	dbVersion, err := version.NewVersion(stringDbVersion)
-	if err != nil {
-		panic(err)
-	}
-
-	statsCtx, cancelStatsCtx := context.WithCancel(context.Background())
 	if b.configuration.Features.OracleDatabase.Forcestats {
-		utils.RunRoutine(b.configuration, func() {
-			b.fetcher.RunOracleDatabaseStats(entry)
+		b.fetcher.RunOracleDatabaseStats(entry)
 
-			cancelStatsCtx()
-		})
-	} else {
-		cancelStatsCtx()
 	}
 
 	database := b.fetcher.GetOracleDatabaseOpenDb(entry)
 	var wg sync.WaitGroup
-
-	utils.RunRoutineInGroup(b.configuration, func() {
-		b.setPDBs(&database, *dbVersion, entry)
-	}, &wg)
 
 	utils.RunRoutineInGroup(b.configuration, func() {
 		database.Tablespaces = b.fetcher.GetOracleDatabaseTablespaces(entry)
@@ -154,14 +137,10 @@ func (b *CommonBuilder) getOpenDatabase(entry agentmodel.OratabEntry, hardwareAb
 	}, &wg)
 
 	utils.RunRoutineInGroup(b.configuration, func() {
-		<-statsCtx.Done()
-
 		database.FeatureUsageStats = b.fetcher.GetOracleDatabaseFeatureUsageStat(entry, stringDbVersion)
 	}, &wg)
 
 	utils.RunRoutineInGroup(b.configuration, func() {
-		<-statsCtx.Done()
-
 		database.Licenses = b.fetcher.GetOracleDatabaseLicenses(entry, stringDbVersion, hardwareAbstractionTechnology)
 	}, &wg)
 
@@ -186,38 +165,6 @@ func (b *CommonBuilder) getOpenDatabase(entry agentmodel.OratabEntry, hardwareAb
 	database.Services = []model.OracleDatabaseService{}
 
 	return &database
-}
-
-func (b *CommonBuilder) setPDBs(database *model.OracleDatabase, dbVersion version.Version, entry agentmodel.OratabEntry) {
-	database.PDBs = []model.OracleDatabasePluggableDatabase{}
-
-	v2, _ := version.NewVersion("11.2.0.4.0")
-	if dbVersion.LessThan(v2) {
-		database.IsCDB = false
-		return
-	}
-
-	database.IsCDB = b.fetcher.GetOracleDatabaseCheckPDB(entry)
-
-	if database.IsCDB {
-		database.PDBs = b.fetcher.GetOracleDatabasePDBs(entry)
-
-		var wg sync.WaitGroup
-
-		for i := range database.PDBs {
-			var pdb *model.OracleDatabasePluggableDatabase = &database.PDBs[i]
-
-			utils.RunRoutineInGroup(b.configuration, func() {
-				pdb.Tablespaces = b.fetcher.GetOracleDatabasePDBTablespaces(entry, pdb.Name)
-			}, &wg)
-
-			utils.RunRoutineInGroup(b.configuration, func() {
-				pdb.Schemas = b.fetcher.GetOracleDatabasePDBSchemas(entry, pdb.Name)
-			}, &wg)
-		}
-
-		wg.Wait()
-	}
 }
 
 func computeLicenses(dbEdition string, coreFactor float64, cpuCores int) []model.OracleDatabaseLicense {

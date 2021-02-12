@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,22 +13,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package oracle
+package model
 
-import (
-	"encoding/json"
-
-	"github.com/ercole-io/ercole-agent/v2/agentmodel"
-)
-
-// Tablespaces marshals -action ts output
-func Tablespaces(cmdOutput []byte) []agentmodel.DbTablespacesModel {
-	var rawOut []agentmodel.DbTablespacesModel
-
-	err := json.Unmarshal(cmdOutput, &rawOut)
-	if err != nil {
-		panic(err)
-	}
-
-	return rawOut
+// OracleDatabaseSchema holds information about Oracle database schema.
+type OracleDatabaseSchema struct {
+	Indexes   int                    `json:"indexes" bson:"indexes"`
+	LOB       int                    `json:"lob" bson:"lob"`
+	Tables    int                    `json:"tables" bson:"tables"`
+	Total     int                    `json:"total" bson:"total"`
+	User      string                 `json:"user" bson:"user"`
+	OtherInfo map[string]interface{} `json:"-" bson:"-"`
 }

@@ -21,7 +21,7 @@ import (
 	"os/exec"
 	"syscall"
 
-	"github.com/ercole-io/ercole-agent/v2/logger"
+	"github.com/ercole-io/ercole-agent-rhel5/logger"
 )
 
 // runCommandAs utility
@@ -43,12 +43,7 @@ func runCommandAs(log logger.Logger, u *User, commandName string, args ...string
 	stdout, err = cmd.Output()
 
 	if err != nil {
-		if exitErr, ok := err.(*exec.ExitError); ok {
-			exitCode = exitErr.ExitCode()
-			stderr = exitErr.Stderr
-		} else {
-			exitCode = -1
-		}
+		exitCode = -1
 	}
 
 	return

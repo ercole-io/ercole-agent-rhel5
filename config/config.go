@@ -21,7 +21,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"runtime"
 )
 
 // Configuration holds the agent configuration options
@@ -91,18 +90,12 @@ type MicrosoftSQLServerFeature struct {
 func ReadConfig() Configuration {
 	baseDir := GetBaseDir()
 	configFile := ""
-	if runtime.GOOS == "windows" {
-		configFile = baseDir + "\\config.json"
-	} else {
-		configFile = baseDir + "/config.json"
-	}
+
+	configFile = baseDir + "/config.json"
+
 	ex := exists(configFile)
 	if !ex {
-		if runtime.GOOS == "windows" {
-			configFile = "C:\\ErcoleAgent\\config.json"
-		} else {
-			configFile = "/opt/ercole-agent/config.json"
-		}
+		configFile = "/opt/ercole-agent/config.json"
 	}
 	raw, err := ioutil.ReadFile(configFile)
 
@@ -126,22 +119,14 @@ func ReadConfig() Configuration {
 
 func exists(name string) bool {
 	_, err := os.Stat(name)
-	if err != nil {
-		return false
-	}
-	return true
+
+	return err == nil
 }
 
 // GetBaseDir return executable base directory, os independant
 func GetBaseDir() string {
-	var s string
-	if runtime.GOOS == "windows" {
-		s, _ = os.Executable()
-		s = filepath.Dir(s)
-	} else {
-		s, _ = os.Readlink("/proc/self/exe")
-		s = filepath.Dir(s)
-	}
+	s, _ := os.Readlink("/proc/self/exe")
+	s = filepath.Dir(s)
 
 	return s
 }

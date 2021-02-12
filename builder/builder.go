@@ -16,10 +16,10 @@
 package builder
 
 import (
-	common "github.com/ercole-io/ercole-agent/v2/builder/common_builder"
-	"github.com/ercole-io/ercole-agent/v2/config"
-	"github.com/ercole-io/ercole-agent/v2/logger"
-	"github.com/ercole-io/ercole/v2/model"
+	common "github.com/ercole-io/ercole-agent-rhel5/builder/common_builder"
+	"github.com/ercole-io/ercole-agent-rhel5/config"
+	"github.com/ercole-io/ercole-agent-rhel5/logger"
+	"github.com/ercole-io/ercole-agent-rhel5/model"
 )
 
 // BuildData will build HostData

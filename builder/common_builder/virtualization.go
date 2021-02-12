@@ -16,8 +16,8 @@
 package common
 
 import (
-	"github.com/ercole-io/ercole-agent/v2/utils"
-	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole-agent-rhel5/model"
+	"github.com/ercole-io/ercole-agent-rhel5/utils"
 )
 
 func (b *CommonBuilder) getClustersInfos() []model.ClusterInfo {

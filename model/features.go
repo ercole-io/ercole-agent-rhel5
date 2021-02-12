@@ -13,45 +13,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package marshal
+package model
 
-import (
-	"testing"
-
-	"github.com/ercole-io/ercole/v2/model"
-	"github.com/stretchr/testify/assert"
-)
-
-var testClustersData string = `Name,NumCPU,NumSockets
-pippo,108,6
-pluto,144,8
-topolino,192
-`
-
-func TestClusters(t *testing.T) {
-	cmdOutput := []byte(testClustersData)
-
-	actual := Clusters(cmdOutput)
-
-	expected := []model.ClusterInfo{
-		{
-			Name:    "pippo",
-			CPU:     108,
-			Sockets: 6,
-			VMs:     []model.VMInfo{},
-		},
-		{
-			Name:    "pluto",
-			CPU:     144,
-			Sockets: 8,
-			VMs:     []model.VMInfo{},
-		},
-		{
-			Name:    "topolino",
-			CPU:     192,
-			Sockets: 1,
-			VMs:     []model.VMInfo{},
-		},
-	}
-	assert.Equal(t, expected, actual)
+// Features holds various informations about the features of the host.
+type Features struct {
+	Oracle    *OracleFeature         `json:"oracle,omitempty" bson:"oracle,omitempty"`
+	OtherInfo map[string]interface{} `json:"-" bson:"-"`
 }

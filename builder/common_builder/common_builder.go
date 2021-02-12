@@ -19,11 +19,11 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/ercole-io/ercole-agent/v2/config"
-	"github.com/ercole-io/ercole-agent/v2/fetcher"
-	"github.com/ercole-io/ercole-agent/v2/logger"
-	"github.com/ercole-io/ercole-agent/v2/utils"
-	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole-agent-rhel5/config"
+	"github.com/ercole-io/ercole-agent-rhel5/fetcher"
+	"github.com/ercole-io/ercole-agent-rhel5/logger"
+	"github.com/ercole-io/ercole-agent-rhel5/model"
+	"github.com/ercole-io/ercole-agent-rhel5/utils"
 )
 
 // CommonBuilder for Linux and Windows hosts
@@ -39,15 +39,11 @@ func NewCommonBuilder(configuration config.Configuration, log logger.Logger) Com
 
 	log.Debugf("runtime.GOOS: [%v]", runtime.GOOS)
 
-	if runtime.GOOS == "windows" {
-		f = fetcher.NewWindowsFetcherImpl(configuration, log)
-	} else {
-		if runtime.GOOS != "linux" {
-			log.Errorf("Unknow runtime.GOOS: [%v], I'll try with linux\n", runtime.GOOS)
-		}
-
-		f = fetcher.NewLinuxFetcherImpl(configuration, log)
+	if runtime.GOOS != "linux" {
+		log.Errorf("Unknow runtime.GOOS: [%v], I'll try with linux\n", runtime.GOOS)
 	}
+
+	f = fetcher.NewLinuxFetcherImpl(configuration, log)
 
 	builder := CommonBuilder{
 		fetcher:       f,
@@ -86,15 +82,6 @@ func (b *CommonBuilder) Run(hostData *model.HostData) {
 
 		lazyInitOracleFeature(&hostData.Features)
 		hostData.Features.Oracle.Exadata = b.getOracleExadataFeature()
-	}
-
-	// build data about Oracle/Database
-	if b.configuration.Features.MicrosoftSQLServer.Enabled {
-		b.log.Debugf("Microsoft/SQLServer mode enabled (user='%s')", b.configuration.Features.MicrosoftSQLServer.FetcherUser)
-		b.setOrResetFetcherUser(b.configuration.Features.MicrosoftSQLServer.FetcherUser)
-
-		lazyInitMicrosoftFeature(&hostData.Features)
-		hostData.Features.Microsoft.SQLServer = b.getMicrosoftSQLServerFeature()
 	}
 
 	// build data about Virtualization
@@ -139,11 +126,5 @@ func (b *CommonBuilder) setOrResetFetcherUser(user string) {
 func lazyInitOracleFeature(fs *model.Features) {
 	if fs.Oracle == nil {
 		fs.Oracle = new(model.OracleFeature)
-	}
-}
-
-func lazyInitMicrosoftFeature(fs *model.Features) {
-	if fs.Microsoft == nil {
-		fs.Microsoft = new(model.MicrosoftFeature)
 	}
 }

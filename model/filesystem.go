@@ -13,30 +13,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package oracle
+package model
 
-import (
-	"testing"
-
-	"github.com/ercole-io/ercole/v2/model"
-	"github.com/stretchr/testify/assert"
-)
-
-const testLicensesData = `Oracle EXE;;
-Oracle ENT; 2.00;
-WebLogic Server Management Pack Enterprise Edition;;
-Partitioning;;
-not spooling currently`
-
-func TestLicenses(t *testing.T) {
-	expected := []model.OracleDatabaseLicense{
-		{Name: "Oracle EXE", Count: 0},
-		{Name: "Oracle ENT", Count: 2.00},
-		{Name: "WebLogic Server Management Pack Enterprise Edition", Count: 0},
-		{Name: "Partitioning", Count: 0},
-	}
-
-	actual := Licenses([]byte(testLicensesData))
-
-	assert.Equal(t, expected, actual)
+// Filesystem holds information about mounted filesystem and used space
+type Filesystem struct {
+	Filesystem     string                 `json:"filesystem" bson:"filesystem"`
+	Type           string                 `json:"type" bson:"type"`
+	Size           int64                  `json:"size" bson:"size"`
+	UsedSpace      int64                  `json:"usedSpace" bson:"usedSpace"`
+	AvailableSpace int64                  `json:"availableSpace" bson:"availableSpace"`
+	MountedOn      string                 `json:"mountedOn" bson:"mountedOn"`
+	OtherInfo      map[string]interface{} `json:"-" bson:"-"`
 }
