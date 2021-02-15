@@ -43,4 +43,4 @@ test:
 
 docker-build:
 	docker run --rm -it -v "$$PWD":/go/src/github.com/ercole-io/ercole-agent-rhel5 \
-		-w /go/src/github.com/ercole-io/ercole-agent-rhel5 golang:1.3 make test build
+		-w /go/src/github.com/ercole-io/ercole-agent-rhel5 golang:1.3 make test all
