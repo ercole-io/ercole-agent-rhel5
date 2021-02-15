@@ -8,14 +8,14 @@ local go_runtime(version, arch) = {
 
 local task_build_go(setup) = {
   name: 'build go ' + setup.goos,
-  runtime: go_runtime('1.15', 'amd64'),
+  runtime: go_runtime('1.3', 'amd64'),
+  working_dir: '/go/src/github.com/ercole-io/ercole-agent-rhel5',
   environment: {
     GOOS: setup.goos,
     BIN: setup.bin,
   },
   steps: [
     { type: 'clone' },
-    { type: 'restore_cache', keys: ['cache-sum-{{ md5sum "go.sum" }}', 'cache-date-'], dest_dir: '/go/pkg/mod/cache' },
     {
       type: 'run',
       name: 'build',
@@ -136,6 +136,11 @@ local task_deploy_repository(dist) = {
       name: 'curl',
       command: |||
         cd dist
+
+        for f in *; do
+          mv $f ${f/agent-/agent-rhel5-}
+        done
+
         for f in *; do
         	URL=$(curl --user "${REPO_USER}" \
             --upload-file $f ${REPO_UPLOAD_URL} --insecure)
@@ -158,89 +163,29 @@ local task_deploy_repository(dist) = {
 {
   runs: [
     {
-      name: 'ercole-agent',
+      name: 'ercole-agent-rhel5',
       tasks: [
-        {
-          name: 'test',
-          runtime: {
-            type: 'pod',
-            arch: 'amd64',
-            containers: [
-              { image: 'golang:1.15' },
-            ],
-          },
+        { name: 'test',
+          runtime: go_runtime('1.3', 'amd64'),
+          working_dir: '/go/src/github.com/ercole-io/ercole-agent-rhel5',
           steps: [
             { type: 'clone' },
-            { type: 'restore_cache', keys: ['cache-sum-{{ md5sum "go.sum" }}', 'cache-date-'], dest_dir: '/go/pkg/mod/cache' },
-
-            { type: 'run', name: '', command: 'go get github.com/golang/mock/mockgen@v1.4.4' },
-            { type: 'run', name: '', command: 'go generate -v ./...' },
-            { type: 'run', name: '', command: 'go test -race -coverprofile=coverage.txt -covermode=atomic ./...' },
-
-            { type: 'save_cache', key: 'cache-sum-{{ md5sum "go.sum" }}', contents: [{ source_dir: '/go/pkg/mod/cache' }] },
-            { type: 'save_cache', key: 'cache-date-{{ year }}-{{ month }}-{{ day }}', contents: [{ source_dir: '/go/pkg/mod/cache' }] },
+            { type: 'run', name: '', command: 'go test ./...' },
           ],
         },
       ] + [
         task_build_go(setup)
         for setup in [
           { goos: 'linux', bin: 'ercole-agent' },
-          { goos: 'windows', bin: 'ercole-agent.exe' },
         ]
       ] + [
         task_pkg_build_rhel(setup)
         for setup in [
           { pkg_build_image: 'amreo/rpmbuild-centos5', dist: 'rhel5', distfamily: 'rhel' },
-          { pkg_build_image: 'amreo/rpmbuild-centos6', dist: 'rhel6', distfamily: 'rhel' },
-          { pkg_build_image: 'amreo/rpmbuild-centos7', dist: 'rhel7', distfamily: 'rhel' },
-          { pkg_build_image: 'amreo/rpmbuild-centos8', dist: 'rhel8', distfamily: 'rhel' },
         ]
       ] + [
-        {
-          name: 'pkg build windows',
-          runtime: {
-            type: 'pod',
-            arch: 'amd64',
-            containers: [
-              { image: 'amreo/nsis' },
-            ],
-          },
-          working_dir: '/project',
-          environment: {
-            WORKSPACE: '/project',
-            DIST: 'win',
-          },
-          steps: [
-            { type: 'restore_workspace', dest_dir: '.' },
-            {
-              type: 'run',
-              name: 'version',
-              command: |||
-                if [ -z ${AGOLA_GIT_TAG} ] || [[ ${AGOLA_GIT_TAG} == *-* ]]; then
-                  export VERSION=latest
-                else
-                  export VERSION=${AGOLA_GIT_TAG}
-                fi
-                echo VERSION: ${VERSION}
-                echo "export VERSION=${VERSION}" > /tmp/variables
-              |||,
-            },
-            {
-              type: 'run',
-              name: 'sed version',
-              command: 'source /tmp/variables && sed -i "s|ERCOLE_VERSION|${VERSION}|g" package/win/installer.nsi',
-            },
-            { type: 'run', command: 'mkdir dist' },
-            { type: 'run', command: 'makensis package/win/installer.nsi' },
-            { type: 'run', command: 'md5sum ercole-agent.exe' },
-            { type: 'run', command: 'source /tmp/variables && cp ercole-agent-setup-${VERSION}.exe dist/' },
-            { type: 'save_to_workspace', contents: [{ source_dir: './dist/', dest_dir: '/dist/', paths: ['**'] }] },
-          ],
-          depends: ['build go windows'],
-        },
-      ] + [
         task_deploy_repository(dist)
-        for dist in ['rhel5', 'rhel6', 'rhel7', 'rhel8', 'windows']
+        for dist in ['rhel5']
       ],
     },
   ],
