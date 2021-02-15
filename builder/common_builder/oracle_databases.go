@@ -125,6 +125,10 @@ func (b *CommonBuilder) getOpenDatabase(entry agentmodel.OratabEntry, hardwareAb
 	var wg sync.WaitGroup
 
 	utils.RunRoutineInGroup(b.configuration, func() {
+		database.PDBs = []model.OracleDatabasePluggableDatabase{}
+	}, &wg)
+
+	utils.RunRoutineInGroup(b.configuration, func() {
 		database.Tablespaces = b.fetcher.GetOracleDatabaseTablespaces(entry)
 	}, &wg)
 
