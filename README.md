@@ -1,29 +1,13 @@
-# ercole-agent
-[![Build Status](https://travis-ci.org/ercole-io/ercole-agent.svg?branch=master)](https://travis-ci.org/ercole-io/ercole-agent)
-[![codecov](https://codecov.io/gh/ercole-io/ercole-agent/branch/master/graph/badge.svg)](https://codecov.io/gh/ercole-io/ercole-agent)
-[![Go Report Card](https://goreportcard.com/badge/github.com/ercole-io/ercole-agent)](https://goreportcard.com/report/github.com/ercole-io/ercole-agent)
-
+# ercole-agent-rhel5
 This is the agent component for the Ercole project.
+This version is designed for RHEL5 servers with kernel version prior to 2.6.23.
+[Because of the minimum requirements of go.](https://github.com/golang/go/wiki/MinimumRequirements), go is not garanteed to work with RHEL5, but with go1.3 we got it working.
+This version is only to mantain support for generic infos and Oracle Databases, no more features will be added.
 Documentation available [here](https://ercole.io).
 
 Supported environments:
 
-- Red Hat Enterprise Linux 5, 6, 7, 8
-- Windows Server 2012 and greater
+- Red Hat Enterprise Linux 5
 
 ## Requirements
-- Go version 1.13 or greater.
-
-## How to build on Linux for Linux target
-    make
-
-## How to build on Linux for Windows target
-    make windows
-
-## How to run
-
-Adjust the config.json configuration file with your server address, username
-and password, then launch the binary:
-
-    ./ercole-agent (Linux)
-    ercole-agent.exe (Windows)
+- Go version 1.3.
