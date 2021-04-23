@@ -18,7 +18,7 @@ package logger
 import (
 	"bytes"
 	"fmt"
-	"log"
+	"io"
 	"os"
 	"runtime"
 	"strings"
@@ -30,21 +30,33 @@ type BasicLogger struct {
 	level         Level
 	componentName string
 	isColored     bool
+	output        io.Writer
 }
 
 // SetLevel to inner field log
-func (l *BasicLogger) SetLevel(level Level) {
+func (l *BasicLogger) setLevel(level Level) {
 	l.level = level
 }
 
+func (l *BasicLogger) setOutput(output io.Writer) {
+	l.output = output
+}
+
 // NewBasicLogger return a BasicLogger initialized with ercole log standard
-func NewBasicLogger(componentName string) Logger {
+func NewBasicLogger(componentName string, options ...LoggerOption) (Logger, error) {
 	var newLogger BasicLogger
 	newLogger.componentName = componentName
 	newLogger.isColored = runtime.GOOS != "windows"
 	newLogger.level = InfoLevel
+	newLogger.output = os.Stdout
 
-	return &newLogger
+	for _, option := range options {
+		err := option(&newLogger)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &newLogger, nil
 }
 
 func (l *BasicLogger) Debugf(format string, args ...interface{}) {
@@ -131,7 +143,10 @@ func (l *BasicLogger) doLog(level Level, args ...interface{}) {
 		buffer.WriteString("\x1b[0m")
 	}
 
-	buffer.WriteString(fmt.Sprintf("%-50s", message))
+	buffer.WriteString(fmt.Sprintf(" %-50s\n", message))
 
-	log.Println(buffer.String())
+	_, err := l.output.Write(buffer.Bytes())
+	if err != nil {
+		fmt.Printf("Error: can't write log: %s\n", err)
+	}
 }

@@ -18,9 +18,10 @@ package config
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
+
+	"github.com/ercole-io/ercole-agent-rhel5/logger"
 )
 
 // Configuration holds the agent configuration options
@@ -36,6 +37,7 @@ type Configuration struct {
 	Period                 int
 	Verbose                bool
 	ParallelizeRequests    bool
+	LogDirectory           string
 	Features               Features
 }
 
@@ -87,7 +89,7 @@ type MicrosoftSQLServerFeature struct {
 
 // ReadConfig reads the configuration file from the current dir
 // or /opt/ercole-agent
-func ReadConfig() Configuration {
+func ReadConfig(log logger.Logger) Configuration {
 	baseDir := GetBaseDir()
 	configFile := ""
 
@@ -110,9 +112,7 @@ func ReadConfig() Configuration {
 		log.Fatal("Unable to parse configuration file", err)
 	}
 
-	if conf.Features.OracleDatabase.Oratab == "" {
-		conf.Features.OracleDatabase.Oratab = "/etc/oratab"
-	}
+	checkConfiguration(log, &conf)
 
 	return conf
 }
@@ -121,6 +121,30 @@ func exists(name string) bool {
 	_, err := os.Stat(name)
 
 	return err == nil
+}
+
+func checkConfiguration(log logger.Logger, config *Configuration) {
+	checkLogDirectory(log, config)
+
+	if config.Features.OracleDatabase.Oratab == "" {
+		config.Features.OracleDatabase.Oratab = "/etc/oratab"
+	}
+}
+
+func checkLogDirectory(log logger.Logger, config *Configuration) {
+	path := config.LogDirectory
+	if path == "" {
+		return
+	}
+
+	isWritable, err := isDirectoryWritable(path)
+	if err != nil {
+		log.Fatal("LogDirectory is not valid: ", err)
+	}
+
+	if !isWritable {
+		log.Fatal("LogDirectory is not writable")
+	}
 }
 
 // GetBaseDir return executable base directory, os independant
