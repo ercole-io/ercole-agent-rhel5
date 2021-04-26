@@ -34,7 +34,7 @@ type Configuration struct {
 	AgentPassword          string
 	EnableServerValidation bool
 	ForcePwshVersion       string
-	Period                 int
+	Period                 uint
 	Verbose                bool
 	ParallelizeRequests    bool
 	LogDirectory           string
@@ -124,10 +124,19 @@ func exists(name string) bool {
 }
 
 func checkConfiguration(log logger.Logger, config *Configuration) {
+	checkPeriod(log, config)
 	checkLogDirectory(log, config)
 
 	if config.Features.OracleDatabase.Oratab == "" {
 		config.Features.OracleDatabase.Oratab = "/etc/oratab"
+	}
+}
+
+func checkPeriod(log logger.Logger, config *Configuration) {
+	if config.Period == 0 {
+		defaultPeriod := uint(24)
+		log.Warnf("Period has invalid value [%d], set to default value [%d]", config.Period, defaultPeriod)
+		config.Period = defaultPeriod
 	}
 }
 
