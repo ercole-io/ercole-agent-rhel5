@@ -16,6 +16,9 @@
 set lines 8000 pages 0 feedback off verify off timing off
 set colsep "|||"
 
+column "TOTAL ALLOC (MB)" for 9999999999.00 
+column "TOTAL PHYS ALLOC (MB)" for 9999999999.00 
+column "USED (MB)" for 9999999999.00
 column "% USED" format 99990.00
 
 select 
