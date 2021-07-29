@@ -101,13 +101,9 @@ local task_pkg_build_rhel(setup) = {
     { type: 'run', command: 'source /tmp/variables && mkdir -p ~/rpmbuild/SOURCES/ercole-agent-${VERSION}' },
     { type: 'run', command: 'source /tmp/variables && cp -r * ~/rpmbuild/SOURCES/ercole-agent-${VERSION}/' },
     { type: 'run', command: 'source /tmp/variables && tar -C ~/rpmbuild/SOURCES -cvzf ~/rpmbuild/SOURCES/ercole-agent-${VERSION}.tar.gz ercole-agent-${VERSION}' },
-    { type: 'run', command: 'pwd; ls && rpmbuild -v -bb package/${DIST}/ercole-agent.spec' },
-    { type: 'run', command: 'find ~/rpmbuild/' },
+    { type: 'run', command: 'pwd; rpmbuild -v -bb package/${DIST}/ercole-agent.spec' },
     { type: 'run', command: 'mkdir dist' },
-    { type: 'run', command: 'ls ~/rpmbuild/RPMS/x86_64/' },
     { type: 'run', command: 'source /tmp/variables && cd ${WORKSPACE} && cp ~/rpmbuild/RPMS/x86_64/ercole-agent-${VERSION}-1*.x86_64.rpm dist/' },
-    { type: 'run', command: 'ls ~/rpmbuild/RPMS/x86_64/ercole-*.rpm' },
-    { type: 'run', command: 'file ~/rpmbuild/RPMS/x86_64/ercole-*.rpm' },
     { type: 'run', command: 'cp ~/rpmbuild/RPMS/x86_64/ercole-*.rpm ${WORKSPACE}/dist' },
     { type: 'save_to_workspace', contents: [{ source_dir: './dist/', dest_dir: '/dist/', paths: ['**'] }] },
   ],
@@ -138,7 +134,7 @@ local task_deploy_repository(dist) = {
         cd dist
 
         for f in *; do
-          mv $f ${f/agent-/agent-rhel5-}
+          mv $f ${f/x86_64/el5.x86_64}
         done
 
         for f in *; do
