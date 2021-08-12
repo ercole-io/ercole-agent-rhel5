@@ -17,7 +17,6 @@ set feedback off pages 0 serverout on verify off lines 1234 timing off
 VARIABLE TUNING number;
 VARIABLE DIAGNOSTICS number;
 VARIABLE LABELSECURITY number;
-VARIABLE COMPRESSION number;
 VARIABLE ANALYTICS number;
 VARIABLE TESTING number;
 VARIABLE OLAP number;
@@ -42,8 +41,12 @@ VARIABLE MEMORY number;
 VARIABLE CONFIGURATION number;
 VARIABLE SECURITY number;
 VARIABLE MANAGEMENT number;
-VARIABLE GUARD number;
 VARIABLE RAC2 number;
+
+-- Deprecated
+VARIABLE COMPRESSION number;
+VARIABLE GUARD number;
+
 begin
 select case when 
 	(select count(*) 
@@ -66,13 +69,6 @@ select case when
 		where (name in('Label Security') 
 		and detected_usages > 0 and dbid=(select dbid from v$database))) > 0 
 	then &&1*&&2 else null end into :LABELSECURITY from dual;
-
-select case when 
-	(select count(*) 
-		from dba_feature_usage_statistics 
-		where (name in('Data Guard') 
-		and detected_usages > 0 and dbid=(select dbid from v$database))) > 0 
-	then &&1*&&2 else null end into :COMPRESSION from dual;
 
 select case when 
 	(select count(*) 
