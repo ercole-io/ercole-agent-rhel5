@@ -31,7 +31,9 @@ local task_build_go(setup) = {
         echo VERSION: ${VERSION}
         echo BUILD_VERSION: ${BUILD_VERSION}
 
-        go build -ldflags="-X main.version=${BUILD_VERSION}" -o ${BIN}
+        sed -i "s|version = \"latest\"|version = \"${BUILD_VERSION}\"|g" main.go
+
+        go build -o ${BIN}
       |||,
     },
     {
