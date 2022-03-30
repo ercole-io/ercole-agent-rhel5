@@ -1,4 +1,4 @@
--- Copyright (c) 2019 Sorint.lab S.p.A.
+-- Copyright (c) 2021 Sorint.lab S.p.A.
 
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -12,6 +12,8 @@
 
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+whenever sqlerror exit sql.sqlcode
 
 set feedback off pages 0 serverout on verify off lines 123 timing off
 -- Prepare settings for pre 12c databases
@@ -29,10 +31,10 @@ col DCOL2_ new_val DCOL2 noprint
 define DCNA=to_char(NULL)
 col DCNA_ new_val DCNA noprint
 
---select 'CDB_' as DFUS_, 'CON_ID' as DCID_, '(select NAME from V$CONTAINERS xz where xz.CON_ID=xy.CON_ID)' as DCNA_, 'XXXXXX' as DCOL1_, 'XXXXXX' as DCOL2_
---  from CDB_FEATURE_USAGE_STATISTICS
---  where exists (select 1 from V$DATABASE where CDB='YES')
---    and rownum=1;
+select 'CDB_' as DFUS_, 'CON_ID' as DCID_, '(select NAME from V$CONTAINERS xz where xz.CON_ID=xy.CON_ID)' as DCNA_, 'XXXXXX' as DCOL1_, 'XXXXXX' as DCOL2_
+  from CDB_FEATURE_USAGE_STATISTICS
+  where exists (select 1 from V$DATABASE where CDB='YES')
+    and rownum=1;
 
 col GID     NOPRINT
 -- Hide CON_NAME column for non-Container Databases:
@@ -45,7 +47,7 @@ col OCS_ new_val OCS noprint
 select 'Y' as OCS_ from V$VERSION where BANNER like 'Oracle %Perf%';
 
 set feedback off pages 0 lines 123 colsep |
--- spool &3 APPEND
+
 with
 MAP as (
 select '' PRODUCT, '' feature, '' MVERSION, '' CONDITION from dual union all
@@ -114,12 +116,14 @@ SELECT '.HW'                                                 , 'Hybrid Columnar 
 SELECT '.HW'                                                 , 'Hybrid Columnar Compression'                             , '^12\.[2-9]|^1[89]\.|^2[0-9]\.'                , ' '       from dual union all
 SELECT '.HW'                                                 , 'Hybrid Columnar Compression Conventional Load'           , '^1[289]\.|^2[0-9]\.'                          , ' '       from dual union all
 SELECT '.HW'                                                 , 'Hybrid Columnar Compression Row Level Locking'           , '^1[289]\.|^2[0-9]\.'                          , ' '       from dual union all
+SELECT '.HW'                                                 , 'ODA Infrastructure'                                       , '^1[9]\.|^2[0-9]\.'                           , ' '       from dual union all
 SELECT '.HW'                                                 , 'Sun ZFS with EHCC'                                       , '^1[289]\.|^2[0-9]\.'                          , ' '       from dual union all
 SELECT '.HW'                                                 , 'ZFS Storage'                                             , '^1[289]\.|^2[0-9]\.'                          , ' '       from dual union all
 SELECT '.HW'                                                 , 'Zone maps'                                               , '^1[289]\.|^2[0-9]\.'                          , ' '       from dual union all
 SELECT 'Label Security'                                      , 'Label Security'                                          , '^11\.2|^1[289]\.|^2[0-9]\.'                   , ' '       from dual union all
-SELECT 'Multitenant'                                         , 'Oracle Multitenant'                                      , '^1[289]\.|^2[0-9]\.'                          , 'C003'    from dual union all -- licensing required only when more than one PDB containers are created
-SELECT 'Multitenant'                                         , 'Oracle Pluggable Databases'                              , '^1[289]\.|^2[0-9]\.'                          , 'C003'    from dual union all -- licensing required only when more than one PDB containers are created
+SELECT 'Multitenant'                                         , 'Oracle Multitenant'                                      , '^1[28]\.'                                     , 'C003'    from dual union all -- licensing required only when more than one PDB containers are created
+SELECT 'Multitenant'                                         , 'Oracle Multitenant'                                      , '^1[9]\.|^2[0-9]\.'                            , 'C005'    from dual union all -- licensing required only when more than three PDB containers are created
+SELECT 'Multitenant'                                         , 'Oracle Pluggable Databases'                              , '^1[28]\.'                                     , 'C003'    from dual union all -- licensing required only when more than one PDB containers are created
 SELECT 'OLAP'                                                , 'OLAP - Analytic Workspaces'                              , '^11\.2|^1[289]\.|^2[0-9]\.'                   , ' '       from dual union all
 SELECT 'OLAP'                                                , 'OLAP - Cubes'                                            , '^1[289]\.|^2[0-9]\.'                          , ' '       from dual union all
 SELECT 'Partitioning'                                        , 'Partitioning (user)'                                     , '^11\.2|^1[289]\.|^2[0-9]\.'                   , ' '       from dual union all
@@ -175,7 +179,7 @@ FIRST_USAGE_DATE,
 LAST_USAGE_DATE ,
 AUX_COUNT       ,
 FEATURE_INFO
-from DBA_FEATURE_USAGE_STATISTICS xy),
+from &&DFUS.FEATURE_USAGE_STATISTICS xy),
 PFUS as (
 -- Product-Feature Usage Statitsics = DBA_FUS entries mapped to their corresponding database products
 select
@@ -235,6 +239,8 @@ select m.PRODUCT, m.CONDITION, m.MVERSION,
                   then 'TRUE'  -- encryption has been used
              when CONDITION = 'C003' and CON_ID=1 and AUX_COUNT > 1
                   then 'TRUE'  -- more than one PDB are created
+             when CONDITION = 'C005' and CON_ID=1 and AUX_COUNT > 3
+                  then 'TRUE'  -- more than three PDBs are created
              when CONDITION = 'C004' and '&&OCS'= 'N'
                   then 'TRUE'  -- not in oracle cloud
              else 'FALSE'
@@ -254,6 +260,8 @@ select m.PRODUCT, m.CONDITION, m.MVERSION,
                  then   regexp_substr(to_char(FEATURE_INFO), 'encryption used:(.*?)(times|TRUE|FALSE)', 1, 1, 'i')
             when CONDITION = 'C003'
                  then   'AUX_COUNT=' || AUX_COUNT
+            when CONDITION = 'C005'
+                 then   'AUX_COUNT=' || AUX_COUNT     
             when CONDITION = 'C004' and '&&OCS'= 'Y'
                  then   'feature included in Oracle Cloud Services Package'
             else ''
@@ -277,10 +285,13 @@ select m.PRODUCT, m.CONDITION, m.MVERSION,
   where nvl(f.TOTAL_SAMPLES, 0) > 0   and   f.DBID=(select dbid from v$database)                     -- ignore features that have never been sampled
 )
   where nvl(CONDITION, '-') != 'INVALID'                   -- ignore features for which licensing is not required without further conditions
-    and not (CONDITION = 'C003' and CON_ID not in (0, 1))  -- multiple PDBs are visible only in CDB$ROOT; PDB level view is not relevant
+    and not (CONDITION in ('C003', 'C005') and CON_ID not in (0, 1))  -- multiple PDBs are visible only in CDB$ROOT; PDB level view is not relevant
 ),
 TAB as (
 select
+    grouping_id(p.CON_ID) as gid,
+    p.CON_ID   ,
+    decode(grouping_id(p.CON_ID), 1, '--ALL--', max(p.CON_NAME)) as CON_NAME,
     m.PRODUCT  ,
     decode(max(p.USAGE),
           '1.NO_PAST_USAGE'        , ''            ,
@@ -294,42 +305,52 @@ select
   --where USAGE in ('2.NO_CURRENT_USAGE', '4.PAST_USAGE', '5.PAST_OR_CURRENT_USAGE', '6.CURRENT_USAGE')   -- ignore ''1.NO_PAST_USAGE'', ''3.SUPPRESSED_DUE_TO_BUG''
   group by rollup(CON_ID), m.PRODUCT
   having not (max(CON_ID) in (-1, 0) and grouping_id(CON_ID) = 1)            -- aggregation not needed for non-container databases
-order by decode(substr(m.PRODUCT, 1, 1), '.', 2, 1), m.PRODUCT)
+order by decode(substr(m.PRODUCT, 1, 1), '.', 2, 1), m.PRODUCT),
+FILTERCONID as (
+select * from tab where con_id is null
+)
 select distinct LTRIM(product,'.')||';'||
 case 
-   when (select UPPER(banner) from v$version where rownum=1) like '%EXTREME%' or (select UPPER(banner) from v$version where rownum=1) like '%ENTERPRISE%' 
-   then
+when (select UPPER(banner) from v$version where rownum=1) like '%EXTREME%' or (select UPPER(banner) from v$version where rownum=1) like '%ENTERPRISE%' 
+then
       case 
- 	     when (select version from v$instance) like '12%' and (select usage from TAB where LTRIM(product,'.') like 'Real Application Clusters') is NOT NULL and (select usage from TAB where LTRIM(product,'.') like 'Real Application Clusters One Node') is NOT NULL 
- 	     then
-              case 
-			     when LTRIM(product,'.') like 'Real Application Clusters' 
- 	     	     then ''||';'
-                 else to_char(((to_number(usage,'99999.99',' NLS_NUMERIC_CHARACTERS = '',.''')*&1)*&2),'990.0')||';'
-              end
-         when (select version from v$instance) like '11%' and (select usage from TAB where LTRIM(product,'.') like 'Real Application Clusters') is NOT NULL and '&3'='xOne' and (select count(*) from gv$instance) = 1 
- 	     then 
-              case 
-                  when LTRIM(product,'.') like 'Real Application Clusters One Node' 
- 	     	      then to_char(((to_number('1','99999.99',' NLS_NUMERIC_CHARACTERS = '',.''')*&1)*&2),'990.0')||';'
-                  when LTRIM(product,'.') like 'Real Application Clusters' 
- 	     	      then ''||';'
-                  else to_char(((to_number(usage,'99999.99',' NLS_NUMERIC_CHARACTERS = '',.''')*&1)*&2),'990.0')||';' 
- 	     	  end
-          when LTRIM(product,'.') like 'Advanced Compression' and usage is NULL and ((select count(*) from dba_tables where owner not in('SYS','SYSMAN','SYSTEM','APEX%') and compress_for not in ('NULL','BASIC'))>0 or (select count(*) from dba_tab_partitions where table_owner not in('SYS','SYSMAN','SYSTEM','APEX%') and compress_for not in ('NULL','BASIC'))>0 or (select count(*) from dba_tab_subpartitions where table_owner not in('SYS','SYSMAN','SYSTEM','APEX%') and compress_for not in ('NULL','BASIC'))>0)
-          then 
-		  to_char(((to_number('1','99999.99',' NLS_NUMERIC_CHARACTERS = '',.''')*&1)*&2),'990.0')||';'
-          when LTRIM(product,'.') like 'Partitioning' and usage is NULL and (select count(*) from dba_tables where partitioned = 'YES' and owner not in ('SYS','SYSTEM','AUDSYS','MDSYS'))>0
-          then 
-		  to_char(((to_number('1','99999.99',' NLS_NUMERIC_CHARACTERS = '',.''')*&1)*&2),'990.0')||';'
-																									WHEN LTRIM(product,'.') LIKE 'Active Data Guard'
-                                                                                                        AND (select usage from TAB where LTRIM(product,'.') LIKE 'GoldenGate' )>0
-                                                                                                        THEN ''||';'
-          else 
-		  to_char(((to_number(usage,'99999.99',' NLS_NUMERIC_CHARACTERS = '',.''')*&1)*&2),'990.0')||';' 
-      end	
-       else ''||';'
+ 	        when (select version from v$instance) like '12%' and (select usage from FILTERCONID where LTRIM(product,'.') like 'Real Application Clusters') is NOT NULL and (select usage from FILTERCONID where LTRIM(product,'.') like 'Real Application Clusters One Node') is NOT NULL 
+ 	        then
+                  case 
+			             when LTRIM(product,'.') like 'Real Application Clusters' 
+ 	        	       then ''||';'
+                   else to_char(((to_number(usage,'99999.99',' NLS_NUMERIC_CHARACTERS = '',.''')*&1)*&2),'990.0')||';'
+                  end
+          when (select version from v$instance) like '11%' and (select usage from FILTERCONID where LTRIM(product,'.') like 'Real Application Clusters') is NOT NULL and '&3'='xOne' and (select count(*) from gv$instance) = 1 
+ 	        then 
+                 case 
+                     when LTRIM(product,'.') like 'Real Application Clusters One Node' 
+ 	        	         then to_char(((to_number('1','99999.99',' NLS_NUMERIC_CHARACTERS = '',.''')*&1)*&2),'990.0')||';'
+                     when LTRIM(product,'.') like 'Real Application Clusters' 
+ 	        	         then ''||';'
+                     else to_char(((to_number(usage,'99999.99',' NLS_NUMERIC_CHARACTERS = '',.''')*&1)*&2),'990.0')||';' 
+ 	        	     end
+           when LTRIM(product,'.') like 'Advanced Compression' and usage is NULL and ((select count(*) from &&DFUS.tables where owner not in('SYS','SYSMAN','SYSTEM','APEX%') and compress_for not in ('NULL','BASIC'))>0 or (select count(*) from &&DFUS.tab_partitions where table_owner not in('SYS','SYSMAN','SYSTEM','APEX%') and compress_for not in ('NULL','BASIC'))>0 or (select count(*) from &&DFUS.tab_subpartitions where table_owner not in('SYS','SYSMAN','SYSTEM','APEX%') and compress_for not in ('NULL','BASIC'))>0)
+           then 
+		          to_char(((to_number('1','99999.99',' NLS_NUMERIC_CHARACTERS = '',.''')*&1)*&2),'990.0')||';'
+           when LTRIM(product,'.') like 'Partitioning' and usage is NULL and (select count(*) from &&DFUS.tables where partitioned = 'YES' and owner not in ('SYS','SYSTEM','AUDSYS','MDSYS'))>0
+           then 
+		          to_char(((to_number('1','99999.99',' NLS_NUMERIC_CHARACTERS = '',.''')*&1)*&2),'990.0')||';'
+					 when LTRIM(product,'.') LIKE 'Active Data Guard'AND (select usage from FILTERCONID where LTRIM(product,'.') LIKE 'GoldenGate' )>0
+           then ''||';'
+           when LTRIM(product,'.') LIKE 'Database Gateway'
+            AND (select count(replace(replace(replace(to_char(substr(FEATURE_INFO, 1, 1000)), chr(10), '[LF]'), chr(13), '[CR]'),'"','''')) from &&DFUS.feature_usage_Statistics
+                 where FEATURE_INFO like '%dg4db2%' or FEATURE_INFO like '%dg4ifmx%'or FEATURE_INFO like '%dg4msql%'or FEATURE_INFO like '%dg4sybs%'or FEATURE_INFO like '%dg4drda%'or FEATURE_INFO like '%dg4tera%' ) = 0
+            AND (select count(replace(replace(replace(to_char(substr(FEATURE_INFO, 1, 1000)), chr(10), '[LF]'), chr(13), '[CR]'),'"','''')) from &&DFUS.feature_usage_Statistics
+                 where FEATURE_INFO like '%NAME:dg4odbc%'
+                 or FEATURE_INFO like '%NAME:ODBC%') > 0  
+            then ''||';'
+        else 
+		      to_char(((to_number(usage,'99999.99',' NLS_NUMERIC_CHARACTERS = '',.''')*&1)*&2),'990.0')||';' 
+        end	
+else
+  to_char(((to_number(usage,'99999.99',' NLS_NUMERIC_CHARACTERS = '',.''')*&1)*&2),'990.0')||';' 
 end
-as a from TAB where product is not null order by a desc;
-spool off
+as a from FILTERCONID where product is not null order by a desc;
+
 exit
