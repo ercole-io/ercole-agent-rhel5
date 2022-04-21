@@ -81,10 +81,10 @@ func (b *CommonBuilder) getOracleDB(entry agentmodel.OratabEntry, host model.Hos
 	dbStatus := b.fetcher.GetOracleDatabaseDbStatus(entry)
 	var database *model.OracleDatabase
 
-	switch dbStatus {
-	case "OPEN":
+	switch {
+	case dbStatus == "READ WRITE" || dbStatus == "READ ONLY":
 		database = b.getOpenDatabase(entry, host.HardwareAbstractionTechnology)
-	case "MOUNTED":
+	case dbStatus == "MOUNTED" || dbStatus == "READ ONLY WITH APPLY":
 		{
 			db := b.fetcher.GetOracleDatabaseMountedDb(entry)
 			database = &db
