@@ -78,6 +78,8 @@ CHECK_TYPE_SERVER_OVM_DMESG=$(dmesg | grep OVM | wc -l)
 CHECK_TYPE_SERVER_OVM_LOG=$(grep OVM /var/log/dmesg | wc -l)
 CHECK_TYPE_SERVER_VMWARE=$(dmesg | grep VMware | wc -l)
 CHECK_TYPE_SERVER_VMWARE_LOG=$(grep VMware /var/log/dmesg* | wc -l)
+CHECK_TYPE_SERVER_KVM_DMESG=$(dmesg | grep -i "Hypervisor detected: KVM" | wc -l)
+CHECK_TYPE_SERVER_KVM_LOG=$(grep -i "Hypervisor detected: KVM" /var/log/dmesg | wc -l)
 CHECK_TYPE_SERVER_HYPERV=$(dmesg | grep HyperV | wc -l)
 CHECK_TYPE_SERVER_HYPERV_LOG=$(grep HyperV /var/log/dmesg* | wc -l)
 CHECK_TYPE_SERVER_HPUX=0
@@ -91,6 +93,9 @@ elif [ $CHECK_TYPE_SERVER_VMWARE -gt 0 ] || [ "$CHECK_TYPE_SERVER_VMWARE_LOG" -g
   VIRTUAL=Y
 elif [ $CHECK_TYPE_SERVER_HYPERV -gt 0 ] || [ "$CHECK_TYPE_SERVER_HYPERV_LOG" -gt 0 ]; then
   HARDWARE_ABSTRACTION_TECHNOLOGY=HYPERV
+  VIRTUAL=Y
+elif [ $CHECK_TYPE_SERVER_KVM_DMESG -gt 0 ] || [ "$CHECK_TYPE_SERVER_KVM_LOG" -gt 0 ]; then
+  HARDWARE_ABSTRACTION_TECHNOLOGY=KVM
   VIRTUAL=Y
 elif [ $CHECK_TYPE_SERVER_HYPERVISOR -gt 0 ]; then
   HARDWARE_ABSTRACTION_TECHNOLOGY=VMOTHER
