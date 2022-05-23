@@ -108,6 +108,10 @@ func (b *CommonBuilder) getOracleDB(entry agentmodel.OratabEntry, host model.Hos
 		return nil
 	}
 
+	grantsDba := b.fetcher.GetOracleDatabaseGrantsDba(entry)
+
+	database.GrantDba = grantsDba
+
 	return database
 }
 

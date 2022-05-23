@@ -152,6 +152,11 @@ func (lf *LinuxFetcherImpl) GetFilesystems() []model.Filesystem {
 	return marshal.Filesystems(out)
 }
 
+func (lf *LinuxFetcherImpl) GetOracleDatabaseGrantsDba(entry agentmodel.OratabEntry) []model.OracleGrantDba {
+	out := lf.execute("grant_dba", entry.DBName, entry.OracleHome)
+	return marshal_oracle.GrantDba(out)
+}
+
 // GetOracleDatabaseOratabEntries get
 func (lf *LinuxFetcherImpl) GetOracleDatabaseOratabEntries() []agentmodel.OratabEntry {
 	out := lf.execute("oratab", lf.configuration.Features.OracleDatabase.Oratab)

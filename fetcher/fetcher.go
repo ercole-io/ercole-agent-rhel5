@@ -56,6 +56,7 @@ type Fetcher interface {
 	GetOracleDatabasePDBs(entry agentmodel.OratabEntry) []model.OracleDatabasePluggableDatabase
 	GetOracleDatabasePDBTablespaces(entry agentmodel.OratabEntry, pdb string) []model.OracleDatabaseTablespace
 	GetOracleDatabasePDBSchemas(entry agentmodel.OratabEntry, pdb string) []model.OracleDatabaseSchema
+	GetOracleDatabaseGrantsDba(entry agentmodel.OratabEntry) []model.OracleGrantDba
 
 	// Oracle/Exadata fetchers
 	GetOracleExadataComponents() []model.OracleExadataComponent
