@@ -16,6 +16,7 @@
 package common
 
 import (
+	"strings"
 	"sync"
 
 	"github.com/ercole-io/ercole-agent-rhel5/agentmodel"
@@ -103,6 +104,11 @@ func (b *CommonBuilder) getOracleDB(entry agentmodel.OratabEntry, host model.Hos
 			database.Licenses = computeLicenses(database.Edition(), database.CoreFactor(host), host.CPUCores)
 		}
 	default:
+		if strings.Contains(dbStatus, "ORA-01034") {
+			b.log.Debugf("Connection Error: DBName: [%s] OracleHome: [%s]", entry.DBName, entry.OracleHome)
+			return nil
+		}
+
 		b.log.Errorf("Unknown dbStatus: [%s] DBName: [%s] OracleHome: [%s]",
 			dbStatus, entry.DBName, entry.OracleHome)
 		return nil
