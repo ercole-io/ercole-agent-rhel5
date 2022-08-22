@@ -26,6 +26,7 @@ type HostData struct {
 	Tags                    []string                `json:"tags"`
 	AgentVersion            string                  `json:"agentVersion"`
 	SchemaVersion           int                     `json:"schemaVersion"`
+	Period                  uint                    `json:"period"`
 	Info                    Host                    `json:"info"`
 	ClusterMembershipStatus ClusterMembershipStatus `json:"clusterMembershipStatus"`
 	Features                Features                `json:"features"`
