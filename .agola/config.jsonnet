@@ -221,7 +221,7 @@ steps: [
       ] + [
         task_pkg_build_rhel(setup)
         for setup in [
-          { pkg_build_image: 'amreo/rpmbuild-centos5', dist: 'rhel5', distfamily: 'rhel' },
+          { pkg_build_image: 'rpmbuild/centos5', dist: 'rhel5', distfamily: 'rhel' },
         ]
       ] + [
         task_deploy_repository(dist)
