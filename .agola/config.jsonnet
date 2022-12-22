@@ -1,3 +1,11 @@
+local alpine_runtime(version, arch) = {
+  type: 'pod',
+  arch: arch,
+  containers: [
+    { image: 'alpine/git:' + version },
+  ],
+};
+
 local go_runtime(version, arch) = {
   type: 'pod',
   arch: arch,
@@ -205,13 +213,23 @@ steps: [
     {
       name: 'ercole-agent-rhel5',
       tasks: [
+        { name: 'clone',
+          runtime: alpine_runtime('2.36.3', 'amd64'),
+          working_dir: '/go/src/github.com/ercole-io/ercole-agent-rhel5',
+          steps: [
+            { type: 'clone' },
+            { type: 'save_to_workspace', contents: [{ source_dir: '.', dest_dir: '.', paths: ['**'] }] },
+          ],
+        },
+      ] + [
         { name: 'test',
           runtime: go_runtime('1.3', 'amd64'),
           working_dir: '/go/src/github.com/ercole-io/ercole-agent-rhel5',
           steps: [
-            { type: 'clone' },
+            { type: 'restore_workspace', dest_dir: '.' },
             { type: 'run', name: '', command: 'go test ./...' },
           ],
+          depends: ['clone'],
         },
       ] + [
         task_build_go(setup)
