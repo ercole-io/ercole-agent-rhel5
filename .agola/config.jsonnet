@@ -23,7 +23,7 @@ local task_build_go(setup) = {
     BIN: setup.bin,
   },
   steps: [
-    { type: 'clone' },
+    { type: 'restore_workspace', dest_dir: '.' },
     {
       type: 'run',
       name: 'build',
