@@ -44,22 +44,6 @@ local task_build_go(setup) = {
         go build -o ${BIN}
       |||,
     },
-    {
-      type: 'save_to_workspace',
-      contents: [{
-        source_dir: '.',
-        dest_dir: '.',
-        paths: [
-          setup.bin,
-          'Makefile',
-          'package/**',
-          'fetch/**',
-          'sql/**',
-          'config.json',
-          'LICENSE',  // Needed by windows
-        ],
-      }],
-    },
   ],
   depends: ['test'],
 };
