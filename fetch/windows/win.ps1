@@ -489,6 +489,25 @@ function getDbOpt {
 	}
 }
 
+function getDbPartitionings {
+	param (
+		[Parameter(Mandatory=$true)]$d
+	)
+	if ($d) { $dbs = gwmi -Class Win32_Service | ? { $_.name -match "oracleservice" -and $_.name -match $d } } else { Write-Warning "missing arguments"; throw }
+	if (!$dbs) { Write "" } #wrong or no instance
+	else {
+		$ohome = ($dbs.PathName.Split()[0]).trim("ORACLE.EXE")
+		$env:ORACLE_SID= $dbs.PathName.Split()[1]
+		if (!(Test-Path .\sql\opt.sql)) { Write-Warning "file partitioning.sql unavailable!"; throw }
+		else {
+			$ar = '-silent / as sysdba @".\sql\partitioning.sql" '+$d
+			if ( $dbs.state -eq "Running" -and $dbs.status -eq "OK" ) {
+				Start-Process $ohome\sqlplus -ArgumentList $ar -Wait -NoNewWindow
+			}
+		}
+	}
+}
+
 switch($s.ToUpper()) {
 	"HOST"				{ getSysinfo }
 	"FILESYSTEM"		{ getPartitions }
@@ -507,5 +526,6 @@ switch($s.ToUpper()) {
 	"ADDM"				{ getDbADDM $d }
 	"SEGMENTADVISOR"	{ getDBSegmentAdvisor $d }
 	"OPT"				{ getDbOpt $d }
+	"PARTITIONING"      { getDbPartitionings $d }
 	Default				{ Write-Host "wrong switch selection" }
 }

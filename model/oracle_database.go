@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -60,8 +60,9 @@ type OracleDatabase struct {
 	FeatureUsageStats []OracleDatabaseFeatureUsageStat  `json:"featureUsageStats" bson:"featureUsageStats"`
 	PDBs              []OracleDatabasePluggableDatabase `json:"pdbs" bson:"pdbs"`
 	Services          []OracleDatabaseService           `json:"services" bson:"services"`
-	OtherInfo         map[string]interface{}            `json:"-" bson:"-"`
 	GrantDba          []OracleGrantDba                  `json:"grantDba" bson:"grantDba"`
+	Partitionings     []OracleDatabasePartitioning      `json:"partitionings" bson:"partitionings"`
+	OtherInfo         map[string]interface{}            `json:"-" bson:"-"`
 }
 
 var (

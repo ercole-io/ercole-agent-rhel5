@@ -81,6 +81,7 @@ install -m 644 package/rhel5/logrotate $RPM_BUILD_ROOT/etc/logrotate.d/ercole-ag
 /opt/ercole-agent/fetch/linux/stats.sh
 /opt/ercole-agent/fetch/linux/tablespace.sh
 /opt/ercole-agent/fetch/linux/tablespace_pdb.sh
+/opt/ercole-agent/fetch/linux/partitioning.sh
 /opt/ercole-agent/fetch/linux/oracle_running_databases.sh
 /opt/ercole-agent/fetch/linux/vmware.ps1
 /opt/ercole-agent/fetch/linux/exadata/info.sh
@@ -108,6 +109,7 @@ install -m 644 package/rhel5/logrotate $RPM_BUILD_ROOT/etc/logrotate.d/ercole-ag
 /opt/ercole-agent/sql/stats.sql
 /opt/ercole-agent/sql/ts.sql
 /opt/ercole-agent/sql/ts_pdb.sql
+/opt/ercole-agent/sql/partitioning.sql
 
 %changelog
 * Mon May  7 2018 Simone Rota <srota2@sorint.it>
