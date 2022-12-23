@@ -57,7 +57,7 @@ type Fetcher interface {
 	GetOracleDatabasePDBTablespaces(entry agentmodel.OratabEntry, pdb string) []model.OracleDatabaseTablespace
 	GetOracleDatabasePDBSchemas(entry agentmodel.OratabEntry, pdb string) []model.OracleDatabaseSchema
 	GetOracleDatabaseGrantsDba(entry agentmodel.OratabEntry) []model.OracleGrantDba
-	GetOracleDatabasePartitionings(entry agentmodel.OratabEntry) ([]model.OracleDatabasePartitioning, error)
+	GetOracleDatabasePartitionings(entry agentmodel.OratabEntry) []model.OracleDatabasePartitioning
 
 	// Oracle/Exadata fetchers
 	GetOracleExadataComponents() []model.OracleExadataComponent
