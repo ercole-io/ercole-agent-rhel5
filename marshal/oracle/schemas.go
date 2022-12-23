@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@ func Schemas(cmdOutput []byte) []model.OracleDatabaseSchema {
 			schema.Tables = marshal.TrimParseInt(splitted[5])
 			schema.Indexes = marshal.TrimParseInt(splitted[6])
 			schema.LOB = marshal.TrimParseInt(splitted[7])
+			schema.AccountStatus = strings.TrimSpace(splitted[8])
 
 			schemas = append(schemas, *schema)
 		}
