@@ -132,7 +132,7 @@ func sendData(data *model.HostData, configuration config.Configuration, log logg
 func writeHostDataOnTmpFile(data *model.HostData, log logger.Logger) {
 	dataBytes, _ := json.MarshalIndent(data, "", "    ")
 
-	filePath := fmt.Sprintf("%s/ercole-agent-hostdata-%s.json", os.TempDir(), time.Now().Local().Format("06-01-02-15:04:05"))
+	filePath := fmt.Sprintf("%s/ercole-agent-hostdata-%s-%s.json", os.TempDir(), data.Hostname, time.Now().Local().Format("06-01-02_15-04-05"))
 
 	tmpFile, err := os.Create(filePath)
 	if err != nil {
