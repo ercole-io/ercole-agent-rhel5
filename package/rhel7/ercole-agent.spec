@@ -86,6 +86,7 @@ install -m 0644 package/rhel7/60-ercole-agent.preset %{buildroot}%{_presetdir}/6
 /opt/ercole-agent/fetch/linux/tablespace.sh
 /opt/ercole-agent/fetch/linux/tablespace_pdb.sh
 /opt/ercole-agent/fetch/linux/oracle_running_databases.sh
+/opt/ercole-agent/fetch/linux/partitioning.sh
 /opt/ercole-agent/fetch/linux/vmware.ps1
 /opt/ercole-agent/fetch/linux/exadata/info.sh
 /opt/ercole-agent/fetch/linux/exadata/storage-status.sh
@@ -112,6 +113,7 @@ install -m 0644 package/rhel7/60-ercole-agent.preset %{buildroot}%{_presetdir}/6
 /opt/ercole-agent/sql/stats.sql
 /opt/ercole-agent/sql/ts.sql
 /opt/ercole-agent/sql/ts_pdb.sql
+/opt/ercole-agent/sql/partitioning.sql
 %{_unitdir}/ercole-agent.service
 %{_presetdir}/60-ercole-agent.preset
 

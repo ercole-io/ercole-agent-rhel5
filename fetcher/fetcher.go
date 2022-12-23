@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -57,6 +57,7 @@ type Fetcher interface {
 	GetOracleDatabasePDBTablespaces(entry agentmodel.OratabEntry, pdb string) []model.OracleDatabaseTablespace
 	GetOracleDatabasePDBSchemas(entry agentmodel.OratabEntry, pdb string) []model.OracleDatabaseSchema
 	GetOracleDatabaseGrantsDba(entry agentmodel.OratabEntry) []model.OracleGrantDba
+	GetOracleDatabasePartitionings(entry agentmodel.OratabEntry) []model.OracleDatabasePartitioning
 
 	// Oracle/Exadata fetchers
 	GetOracleExadataComponents() []model.OracleExadataComponent

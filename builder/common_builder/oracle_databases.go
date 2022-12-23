@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -100,6 +100,7 @@ func (b *CommonBuilder) getOracleDB(entry agentmodel.OratabEntry, host model.Hos
 			database.PDBs = []model.OracleDatabasePluggableDatabase{}
 			database.Services = []model.OracleDatabaseService{}
 			database.FeatureUsageStats = []model.OracleDatabaseFeatureUsageStat{}
+			database.Partitionings = []model.OracleDatabasePartitioning{}
 
 			database.Licenses = computeLicenses(database.Edition(), database.CoreFactor(host), host.CPUCores)
 		}
@@ -170,6 +171,10 @@ func (b *CommonBuilder) getOpenDatabase(entry agentmodel.OratabEntry, hardwareAb
 
 	utils.RunRoutineInGroup(b.configuration, func() {
 		database.Backups = b.fetcher.GetOracleDatabaseBackups(entry)
+	}, &wg)
+
+	utils.RunRoutineInGroup(b.configuration, func() {
+		database.Partitionings = b.fetcher.GetOracleDatabasePartitionings(entry)
 	}, &wg)
 
 	wg.Wait()

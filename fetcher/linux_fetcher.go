@@ -287,6 +287,12 @@ func (lf *LinuxFetcherImpl) GetOracleDatabasePDBSchemas(entry agentmodel.OratabE
 	return marshal_oracle.Schemas(out)
 }
 
+// GetOracleDatabaseTablespaces get
+func (lf *LinuxFetcherImpl) GetOracleDatabasePartitionings(entry agentmodel.OratabEntry) []model.OracleDatabasePartitioning {
+	out := lf.execute("partitioning", entry.DBName, entry.OracleHome)
+	return marshal_oracle.Partitionings(out)
+}
+
 // GetClusters return VMWare clusters from the given hyperVisor
 func (lf *LinuxFetcherImpl) GetClusters(hv config.Hypervisor) []model.ClusterInfo {
 	var out []byte
