@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Sorint.lab S.p.A.
+// Copyright (c) 2023 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ type Fetcher interface {
 
 	// Operating system fetchers
 	GetHost() model.Host
-	GetFilesystems() []model.Filesystem
+	GetFilesystems() ([]model.Filesystem, error)
 	GetClustersMembershipStatus() model.ClusterMembershipStatus
 
 	// Virtualization fetcher

@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2023 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -26,10 +26,12 @@ import (
 // from the filesystem fetcher command output.
 // Filesystem output is a list of filesystem entries with positional attribute columns
 // separated by one or more spaces
-func Filesystems(cmdOutput []byte) []model.Filesystem {
+func Filesystems(cmdOutput []byte) ([]model.Filesystem, error) {
 	filesystems := []model.Filesystem{}
 
 	scanner := bufio.NewScanner(strings.NewReader(string(cmdOutput)))
+
+	var err error
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -39,13 +41,21 @@ func Filesystems(cmdOutput []byte) []model.Filesystem {
 
 		fs.Filesystem = strings.TrimSpace(iter())
 		fs.Type = strings.TrimSpace(iter())
-		fs.Size = TrimParseInt64(iter())
-		fs.UsedSpace = TrimParseInt64(iter())
-		fs.AvailableSpace = TrimParseInt64(iter())
+		if fs.Size, err = TrimParseInt64HandlingError(iter()); err != nil {
+			return nil, err
+		}
+
+		if fs.UsedSpace, err = TrimParseInt64HandlingError(iter()); err != nil {
+			return nil, err
+		}
+
+		if fs.AvailableSpace, err = TrimParseInt64HandlingError(iter()); err != nil {
+			return nil, err
+		}
 		iter() // throw away used space percentage
 		fs.MountedOn = strings.TrimSpace(iter())
 		filesystems = append(filesystems, fs)
 	}
 
-	return filesystems
+	return filesystems, nil
 }

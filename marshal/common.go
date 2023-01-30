@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2023 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@ package marshal
 
 import (
 	"bufio"
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -104,6 +105,17 @@ func TrimParseInt64(s string) int64 {
 	}
 
 	return val
+}
+
+func TrimParseInt64HandlingError(s string) (int64, error) {
+	s = strings.TrimSpace(s)
+
+	val, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		return 0, fmt.Errorf("Can't parse value \"%s\" as int64; err: %w", s, err)
+	}
+
+	return val, nil
 }
 
 func TrimParseUint(s string) uint {
