@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2023 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -56,9 +56,12 @@ func NewCommonBuilder(configuration config.Configuration, log logger.Logger) Com
 
 // Run fill hostData
 func (b *CommonBuilder) Run(hostData *model.HostData) {
+	var err error
 	// build data about host info
 	hostData.Info = b.fetcher.GetHost()
-	hostData.Filesystems = b.fetcher.GetFilesystems()
+	if hostData.Filesystems, err = b.fetcher.GetFilesystems(); err != nil {
+		b.log.Error(err)
+	}
 	hostData.Hostname = hostData.Info.Hostname
 	if b.configuration.Hostname != "default" {
 		hostData.Hostname = b.configuration.Hostname

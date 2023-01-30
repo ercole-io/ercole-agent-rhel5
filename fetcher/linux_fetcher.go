@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2023 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -147,7 +147,7 @@ func (lf *LinuxFetcherImpl) GetHost() model.Host {
 }
 
 // GetFilesystems get
-func (lf *LinuxFetcherImpl) GetFilesystems() []model.Filesystem {
+func (lf *LinuxFetcherImpl) GetFilesystems() ([]model.Filesystem, error) {
 	out := lf.execute("filesystem")
 	return marshal.Filesystems(out)
 }
