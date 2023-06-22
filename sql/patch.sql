@@ -16,6 +16,8 @@
 set lines 8000 pages 0 feedback off verify off timing off
 set colsep "|||"
 
+column OWNER for a30
+
 select 
 	   (select host_name from v$instance) as Hostname,
 	   'ND',
