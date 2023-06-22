@@ -16,7 +16,7 @@
 set lines 8000 pages 0 feedback off verify off timing off
 set colsep "|||" 
 
-column OWNER for a20 
+column OWNER for a30
 column SEGMENT_NAME for a40 
 column PARTITION_NAME for a40 
 
